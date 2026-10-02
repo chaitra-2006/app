@@ -1,1 +1,120 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phone</title><style>body{margin:0;background:#111;color:#fff;text-align:center;font-family:sans-serif}input{width:80%;padding:15px;font-size:24px;margin:20px;border-radius:10px;text-align:center}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:auto}button{padding:20px;font-size:20px;border-radius:50%;border:none;background:#333;color:#fff}.c{background:#0f0;color:#000;border-radius:20px;grid-column:span 3}</style></head><body><h2>📞 My Phone</h2><input id=d placeholder="Number"><div class=g><button onclick="d.value+='1'">1</button><button onclick="d.value+='2'">2</button><button onclick="d.value+='3'">3</button><button onclick="d.value+='4'">4</button><button onclick="d.value+='5'">5</button><button onclick="d.value+='6'">6</button><button onclick="d.value+='7'">7</button><button onclick="d.value+='8'">8</button><button onclick="d.value+='9'">9</button><button onclick="d.value+='*'">*</button><button onclick="d.value+='0'">0</button><button onclick="d.value+='#'">#</button><button class=c onclick="location.href='tel:'+d.value">CALL</button></div></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>My Phone</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#ECE5DD;padding-bottom:70px}
+.top{background:#075E54;color:white;padding:12px 15px;font-size:20px;display:flex;justify-content:space-between;align-items:center}
+.page{display:none;min-height:80vh}
+.page.active{display:block}
+#display{background:white;margin:15px;padding:18px;border-radius:25px;font-size:26px;min-height:65px;letter-spacing:1px;text-align:center;box-shadow:0 1px 2px #0002}
+.keys{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:10px 25px}
+.keys button{background:white;border:none;padding:18px;border-radius:15px;font-size:24px;box-shadow:0 2px 4px #0002}
+.keys button small{display:block;font-size:10px;color:#888}
+.keys button:active{background:#25D366;color:white}
+.call-big{grid-column:span 3;display:flex;justify-content:center;gap:20px;margin-top:10px}
+.call-big button{width:70px;height:70px;border-radius:50%!important;font-size:30px!important}
+#callBtn{background:#25D366;color:white}
+#delBtn{background:#f44336;color:white}
+.history-item{background:white;padding:12px 15px;margin:8px 10px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 2px #0002}
+.chat-list-item{background:white;padding:12px 15px;margin:1px 0;display:flex;gap:12px;align-items:center}
+.avatar{width:45px;height:45px;background:#128C7E;border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;font-size:20px}
+.chat-screen{background:#ECE5DD;height:70vh;overflow-y:auto;padding:10px}
+.msg{background:white;padding:8px 12px;border-radius:8px;margin:8px;max-width:75%;box-shadow:0 1px 1px #0002}
+.msg.me{background:#DCF8C6;margin-left:auto}
+.input-bar{position:fixed;bottom:65px;left:0;right:0;display:flex;padding:8px;background:#F0F0F0;gap:8px}
+.input-bar input{flex:1;padding:10px 15px;border:none;border-radius:20px;outline:none}
+.input-bar button{background:#25D366;color:white;border:none;width:45px;height:45px;border-radius:50%;font-size:20px}
+.video-box{padding:15px;text-align:center}
+#myVideo{width:100%;max-width:350px;height:250px;background:black;border-radius:15px;object-fit:cover}
+.vid-controls{margin-top:15px;display:flex;justify-content:center;gap:15px}
+.vid-controls button{padding:12px 20px;border:none;border-radius:25px;color:white;font-size:16px}
+.tab{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;box-shadow:0 -2px 5px #0002}
+.tab button{flex:1;padding:12px 5px;border:none;background:white;color:#888;font-size:12px}
+.tab button.active{color:#128C7E;font-weight:bold}
+.tab button span{display:block;font-size:22px}
+</style>
+</head>
+<body>
+<div class="top"><span>📞 My Phone</span><span onclick="clearAll()" style="font-size:14px">Clear</span></div>
+
+<!-- DIALER -->
+<div id="p-dialer" class="page active">
+<div id="display"></div>
+<div class="keys">
+<button onclick="add('1')">1<small>.,</small></button><button onclick="add('2')">2<small>ABC</small></button><button onclick="add('3')">3<small>DEF</small></button>
+<button onclick="add('4')">4<small>GHI</small></button><button onclick="add('5')">5<small>JKL</small></button><button onclick="add('6')">6<small>MNO</small></button>
+<button onclick="add('7')">7<small>PQRS</small></button><button onclick="add('8')">8<small>TUV</small></button><button onclick="add('9')">9<small>WXYZ</small></button>
+<button onclick="add('*')">*</button><button onclick="add('0')">0<small>+</small></button><button onclick="add('#')">#</button>
+<div class="call-big"><button id="delBtn" onclick="back()">⌫</button><button id="callBtn" onclick="makeCall()">📞</button><button style="background:#128C7E;color:white" onclick="videoCall()">📹</button></div>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div id="p-history" class="page">
+<div id="historyList" style="padding-top:10px"></div>
+</div>
+
+<!-- CHAT LIST -->
+<div id="p-chat" class="page">
+<div class="chat-list-item" onclick="openChat('Mom')"><div class="avatar">M</div><div><b>Mom</b><br><small>Hey, call me ❤️</small></div></div>
+<div class="chat-list-item" onclick="openChat('Best Friend')"><div class="avatar" style="background:#25D366">B</div><div><b>Best Friend</b><br><small>Where are you?</small></div></div>
+<div class="chat-list-item" onclick="openChat('Work Group')"><div class="avatar" style="background:#FF9800">W</div><div><b>Work Group</b><br><small>Meeting at 5 PM</small></div></div>
+<div id="customChats"></div>
+<div style="padding:15px"><input id="newContact" placeholder="Add new chat name" style="padding:10px;width:70%;border-radius:10px;border:1px solid #ccc"><button onclick="addChat()" style="padding:10px 15px;background:#25D366;color:white;border:none;border-radius:10px">Add</button></div>
+</div>
+
+<!-- CHAT SCREEN -->
+<div id="p-chatOpen" class="page">
+<div class="top"><span onclick="showTab('chat')" style="cursor:pointer">← <span id="chatName">Chat</span></span><span>📞 📹</span></div>
+<div id="chatMessages" class="chat-screen"></div>
+<div class="input-bar"><input id="chatInput" placeholder="Type a message"><button onclick="sendMsg()">➤</button></div>
+</div>
+
+<!-- VIDEO -->
+<div id="p-video" class="page">
+<div class="video-box">
+<h3>📹 Video Call</h3><br>
+<video id="myVideo" autoplay muted playsinline></video><br><br>
+<p id="vidStatus">Camera off</p>
+<div class="vid-controls">
+<button style="background:#25D366" onclick="startVideo()">Start Camera</button>
+<button style="background:#f44336" onclick="stopVideo()">Stop</button>
+</div>
+<br><p style="color:#666;font-size:13px">This will start your camera for video call demo</p>
+</div>
+</div>
+
+<div class="tab">
+<button id="t-chat" onclick="showTab('chat')"><span>💬</span>Chat</button>
+<button id="t-video" onclick="showTab('video')"><span>📹</span>Video</button>
+<button id="t-history" onclick="showTab('history')"><span>🕒</span>History</button>
+<button id="t-dialer" class="active" onclick="showTab('dialer')"><span>⌨️</span>Dialer</button>
+</div>
+
+<script>
+let num=""; let currentChat=""; let hist=JSON.parse(localStorage.getItem('hist')||'[]'); let chats=JSON.parse(localStorage.getItem('chats')||'{}');
+function add(d){num+=d;document.getElementById('display').innerText=num}
+function back(){num=num.slice(0,-1);document.getElementById('display').innerText=num}
+function makeCall(){if(!num)return; hist.unshift({n:num,t:new Date().toLocaleString(),type:'Outgoing'}); localStorage.setItem('hist',JSON.stringify(hist)); renderHist(); window.location.href='tel:'+num}
+function videoCall(){if(!num){alert('Enter number first');return} showTab('video'); startVideo()}
+function showTab(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active')); document.getElementById('p-'+p).classList.add('active'); document.querySelectorAll('.tab button').forEach(e=>e.classList.remove('active')); let tb=document.getElementById('t-'+p); if(tb) tb.classList.add('active'); if(p=='history')renderHist(); if(p=='chat')renderCustomChats()}
+function renderHist(){let h=document.getElementById('historyList'); if(!hist.length){h.innerHTML='<p style=\"text-align:center;padding:30px;color:#888\">No calls yet</p>';return} h.innerHTML=hist.map((x,i)=>`<div class="history-item"><div><b>${x.n}</b><br><small>${x.t} • ${x.type}</small></div><div><button onclick="addFromHist('${x.n}')" style="background:#25D366;color:white;border:none;padding:8px 12px;border-radius:20px">📞</button> <button onclick="delHist(${i})" style="background:#f44336;color:white;border:none;padding:8px;border-radius:50%">X</button></div></div>`).join('')}
+function addFromHist(n){num=n; document.getElementById('display').innerText=num; showTab('dialer')}
+function delHist(i){hist.splice(i,1); localStorage.setItem('hist',JSON.stringify(hist)); renderHist()}
+function clearAll(){if(confirm('Clear history?')){hist=[]; localStorage.setItem('hist','[]'); renderHist()}}
+function openChat(name){currentChat=name; document.getElementById('chatName').innerText=name; document.getElementById('p-chat').classList.remove('active'); document.getElementById('p-chatOpen').classList.add('active'); renderMsgs()}
+function renderMsgs(){let box=document.getElementById('chatMessages'); let list=chats[currentChat]||[{text:'Hi! 👋',me:false},{text:'Hey! This is WhatsApp style chat in your app!',me:false}]; box.innerHTML=list.map(m=>`<div class="msg ${m.me?'me':''}">${m.text}<br><small style="font-size:10px;color:#888;float:right">${m.time||''}</small></div>`).join(''); box.scrollTop=box.scrollHeight}
+function sendMsg(){let inp=document.getElementById('chatInput'); if(!inp.value)return; if(!chats[currentChat])chats[currentChat]=[]; chats[currentChat].push({text:inp.value,me:true,time:new Date().toLocaleTimeString()}); chats[currentChat].push({text:'Got it: '+inp.value,me:false,time:new Date().toLocaleTimeString()}); localStorage.setItem('chats',JSON.stringify(chats)); inp.value=''; renderMsgs()}
+function addChat(){let v=document.getElementById('newContact').value; if(!v)return; let d=document.getElementById('customChats'); d.innerHTML+=`<div class="chat-list-item" onclick="openChat('${v}')"><div class="avatar">${v[0]}</div><div><b>${v}</b><br><small>New chat</small></div></div>`; document.getElementById('newContact').value=''}
+function renderCustomChats(){}
+let stream=null;
+async function startVideo(){try{stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true}); document.getElementById('myVideo').srcObject=stream; document.getElementById('vidStatus').innerText='📹 Camera ON - Video Call Active'}catch(e){alert('Camera permission needed: '+e.message)}}
+function stopVideo(){if(stream){stream.getTracks().forEach(t=>t.stop()); document.getElementById('myVideo').srcObject=null; document.getElementById('vidStatus').innerText='Camera off'}}
+renderHist();
+</script>
+</body>
+  </html>
